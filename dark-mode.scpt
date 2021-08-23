@@ -10,7 +10,7 @@ on run argv
 	set auto   to false  --auto,   -a  Get/set auto-switch preference instead of light/dark theme
 	set quiet  to false  --quiet,  -q  Don't produce output, just quit with an error code if false
 	set toggle to false  --toggle, -t  Toggle relevant property
-	set task   to "get"
+	set update to false
 	
 	set argv to expandOptions from argv given ¬
 		shortOptions: {monadic: "a",    niladic: "qt"}, ¬
@@ -37,22 +37,32 @@ on run argv
 		else if {"-t", "--toggle"} contains arg then
 			set toggle to true
 		end if
-	end repeat
-	if length of argv > 0 then set task to "set"
+	end
+	if length of argv > 0 then set update to true
 	
-	log argv
-	return
-	
-	tell application "System Events"
-		tell appearance preferences
-			set isDark to dark mode
-			if my getAuto() then
-				log (isDark as String) & " (auto)"
+	if auto is true then
+		tell AutoSwitch
+			if toggle then
+				toggle(quiet)
+			else if update then
+				update(first item of argv, quiet)
 			else
-				log isDark
+				report(quiet)
 			end if
 		end tell
-	end tell
+	else
+		return
+		tell application "System Events"
+			tell appearance preferences
+				set isDark to dark mode
+				if my getAuto() then
+					log (isDark as String) & " (auto)"
+				else
+					log isDark
+				end if
+			end tell
+		end tell
+	end if
 end
 
 -- Expand bundled switches and --long-options with values affixed by ‘=’
@@ -141,11 +151,48 @@ to makeBoolean(value)
 	end if
 end
 
--- Return TRUE if appearance auto-switching is enabled
-to getAuto()
-	try
-		set auto to (do shell script "defaults read -g AppleInterfaceStyleSwitchesAutomatically 2>/dev/null")
-		return makeBoolean(auto)
-	end try
-	return false
+script AutoSwitch
+	-- Internal: Return the defaults(1) invocation needed to perform the given operation
+	to cmd(op)
+		return "defaults " & op & " -g AppleInterfaceStyleSwitchesAutomatically "
+	end
+	
+	-- Return TRUE if appearance auto-switching is enabled
+	to value()
+		try
+			set auto to (do shell script cmd("read 2>/dev/null"))
+			return makeBoolean(auto) equals true
+		end try
+		return false
+	end
+	
+	-- Toggle the current state of the auto-switch setting
+	to toggle(quietly)
+		set auto to not my value()
+		update(auto, quietly)
+	end
+	
+	-- Either display the current setting or set an error code if it's FALSE
+	to report(quietly)
+		if quietly then
+			if my value() isn't true then error number 1
+		else
+			log value()
+		end
+	end
+
+	-- Change the value of the auto-switch setting
+	to update(value, quietly)
+		if quietly then
+			try
+				return update(value, false)
+			error number code
+				error number code
+			end try
+		else
+			set value to makeBoolean(value) equals true
+			do shell script cmd("write") & (value as Integer)
+			if quietly isn't true then log value
+		end if
+	end
 end
