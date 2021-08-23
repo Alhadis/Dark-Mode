@@ -38,13 +38,30 @@ to getAuto()
 	return false
 end
 
-tell application "System Events"
-	tell appearance preferences
-		set isDark to dark mode
-		if my getAuto() then
-			log (isDark as String) & " (auto)"
-		else
-			log isDark
-		end if
+on run argv
+	
+	-- Parse command-line arguments:
+	(* set argv to expandOptions of argv given shortOptions: {"a"}, longOptions: {"auto"} *)
+	set argv to run script "get-options.scpt" with parameters argv in "AppleScript"
+	
+	set AppleScript's text item delimiters to {", "}
+	log argv as Text
+	
+	(*
+	set auto    to false --auto,   -a   Get/set auto-switch preference instead of light/dark theme
+	set quiet   to false --quiet,  -q   Don't produce output, just quit with an error code if false
+	set toggle  to false --toggle, -t   Toggle relevant property
+	set stopped to false
+	set task    to "get"
+	*)
+	tell application "System Events"
+		tell appearance preferences
+			set isDark to dark mode
+			if my getAuto() then
+				log (isDark as String) & " (auto)"
+			else
+				log isDark
+			end if
+		end tell
 	end tell
-end tell
+end
