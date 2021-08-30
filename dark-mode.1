@@ -1,0 +1,126 @@
+.Dd August 30, 2021
+.Dt DARK-MODE 1
+.Os "Mac OS X"
+.
+.Sh NAME
+.Nm dark-mode
+.Nd get or set system dark-mode
+.
+.Sh SYNOPSIS
+.Nm
+.	Op Fl aqt
+.	Op Ar value
+.Nm
+.	Op Fl -version
+.	Op Fl -help
+.
+.Sh DESCRIPTION
+.Nm
+is a command-line interface for the system's
+.Sy Appearance
+setting
+.Po located under the
+.Dq General
+in System Preferences
+.Pc .
+.
+.Pp
+Called without arguments,
+.Nm
+displays the current dark-mode setting by writing
+.Sy true
+or
+.Sy false
+to the standard output.
+.
+.Pp
+If a boolean-like
+.Ar value
+is provided,
+.Nm
+enables dark-mode if it matches any of the strings
+.Sy true ,
+.Sy yes ,
+.Sy on
+or
+.Sy enabled ,
+or if its numeric value is \(>= 1.0.
+Conversely, the strings
+.Sy false ,
+.Sy no ,
+.Sy off
+or
+.Sy disabled
+will disable dark-mode, as will a numeric value less than 1.
+.
+.
+.Bl -tag -width 6n
+.It Fl a , Fl -auto
+Target the system's auto-switch setting instead of dark-mode.
+When active, dark-mode will be automatically enabled automatically depending on the time-of-day.
+.
+.It Fl h , Fl -help
+Print a terse usage summary, then exit.
+.
+.It Fl q , Fl -quiet
+Exit with an error code if dark-mode is disabled.
+When used with
+.Fl -toggle ,
+updated values are not written to standard output.
+.
+.It Fl t , Fl -toggle
+Toggle the current dark-mode setting.
+The new value is written to standard output unless
+.Fl -q
+is used.
+.
+.It Fl v , Fl -version
+Print the program's version string, then exit.
+.El
+.
+.Sh EXIT STATUS
+.Ex -std
+.
+.Sh DIAGNOSTICS
+.Bl -ohang
+.It Sy "execution error: An error of type 1 has occurred. (1)"
+Emitted by the AppleScript interpreter upon receiving an uncaught exception.
+This happens irrespective of whether the
+.Fl -quiet
+flag has been used.
+.El
+.
+.Sh SEE ALSO
+.Xr defaults 1 ,
+.Xr osascript 1
+.
+.Pp
+Apple's page on Dark Mode in their
+.Lk https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/dark-mode "Human Interface Guidelines" .
+.
+.Sh HISTORY
+A setting for light and dark modes first appeared in macOS\~Mojave (10.14).
+.\" Source: https://web.archive.org/web/20190901002230/https://www.apple.com/macos/mojave/
+.
+Support for appearance auto-switching was added in macOS\~Catalina (10.15).
+.\" Source: https://medium.com/@ruiaureliano/check-light-dark-appearance-for-macos-mojave-catalina-fb2343af875f
+.
+.Sh AUTHORS
+.An -nosplit
+Copyright \(co 2021
+.An John Gardner Aq Mt gardnerjohng@gmail.com .
+Freely released under the
+.Lk http://opensource.org/licenses/ISC "ISC license" .
+.
+.Sh BUGS
+Due to how AppleScript exceptions are handled at runtime,
+an error message is still displayed even if the
+.Fl -quiet
+switch is passed.
+As there appears to be no way to set a non-zero exit code from within
+.Xr osascript 1
+without it being reported to STDERR, authors must redirect the stream manually:
+.Dl Nm Fl qt 2> Ns Pa /dev/null
+.
+.Pp
+Modifications to the auto-switch setting are not reflected immediately in the System Preferences.
