@@ -13,8 +13,8 @@ on run argv
 	set update to false
 	
 	set argv to expandOptions from argv given ¬
-		shortOptions: {monadic: "a",    niladic: "qt"}, ¬
-		longOptions:  {monadic: "auto", niladic: "quiet toggle"}	
+		shortOptions: {monadic: "", niladic: "aqt"}, ¬
+		longOptions:  {monadic: "", niladic: "auto quiet toggle"}
 	repeat
 		set argc to the length of argv
 		if argc equals 0 then exit
@@ -24,14 +24,6 @@ on run argv
 		if arg equals "--" then exit
 		if {"-a", "--auto"} contains arg then
 			set auto to true
-			if the length of argv > 0 then
-				set arg to the first item of argv
-				if arg does not start with "-" or arg isn't contained by ¬
-				{"-a", "-q", "-t", "--auto", "--quiet", "--toggle"} then
-					set argv to the rest of argv
-					set auto to arg
-				end if
-			end if
 		else if {"-q", "--quiet"} contains arg then
 			set quiet to true
 		else if {"-t", "--toggle"} contains arg then
