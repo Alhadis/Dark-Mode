@@ -74,6 +74,7 @@ to expandOptions from argv given shortOptions: shortOptions, longOptions: longOp
 	set shortOptions to shortMonadic & shortNiladic
 	set opts         to {}
 	
+	considering case, white space and punctuation
 	repeat while the length of argv > 0
 		set arg to the first item of argv
 
@@ -117,12 +118,14 @@ to expandOptions from argv given shortOptions: shortOptions, longOptions: longOp
 			end repeat
 		end if
 	end repeat
+	end considering
 	
 	return opts & argv
 end
 
 -- Coerce a boolean-ish string into an actual boolean
 to makeBoolean(value)
+	considering numeric strings and diacriticals but ignoring white space and punctuation
 	if the class of the value isn't String then
 		set value to (value as String)
 	end if
@@ -141,13 +144,12 @@ to makeBoolean(value)
 	) then
 		return false
 	else
-		considering numeric strings
-			try
-				return (value as real) ≥ 1
-			end try
-		end considering
+		try
+			return (value as real) ≥ 1
+		end try
 		return null
 	end if
+	end considering
 end
 
 script AutoSwitch
