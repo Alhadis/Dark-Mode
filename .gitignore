@@ -16,6 +16,3 @@ package-lock.json
 [._]s[a-v][a-z]
 [._]sw[a-p]
 /test.*
-
-# Project-specific
-/dark-mode
