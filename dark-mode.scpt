@@ -50,17 +50,25 @@ on run argv
 			end if
 		end tell
 	else
-		return
-		tell application "System Events"
-			tell appearance preferences
-				set isDark to dark mode
-				if my getAuto() then
-					log (isDark as String) & " (auto)"
+		if update then
+			set isDark to makeBoolean(first item of argv) equals true
+			tell application "System Events"
+				tell appearance preferences to set dark mode to isDark
+			end tell
+		else
+			tell application "System Events"
+				set isDark to dark mode of appearance preferences
+				if toggle then
+					set isDark to not isDark
+					tell appearance preferences to set dark mode to isDark
+					if not quiet then log isDark
+				else if quiet then
+					if isDark isn't true then error number 1
 				else
 					log isDark
 				end if
 			end tell
-		end tell
+		end if
 	end if
 end
 
