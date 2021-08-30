@@ -3,6 +3,7 @@
 property name:    "DarkMode"
 property id:      "com.alhadis.dark-mode"
 property version: "1.0.0"
+property usage:   "Usage: dark-mode [-aqt] [new-value]"
 
 on run argv
 	
@@ -13,8 +14,8 @@ on run argv
 	set update to false
 	
 	set argv to expandOptions from argv given ¬
-		shortOptions: {monadic: "", niladic: "aqt"}, ¬
-		longOptions:  {monadic: "", niladic: "auto quiet toggle"}
+		shortOptions: {monadic: "", niladic: "ahqtv"}, ¬
+		longOptions:  {monadic: "", niladic: "auto help quiet toggle version"}
 	repeat
 		set argc to the length of argv
 		if argc equals 0 then exit
@@ -28,6 +29,12 @@ on run argv
 			set quiet to true
 		else if {"-t", "--toggle"} contains arg then
 			set toggle to true
+		else if {"-h", "--help"} contains arg then
+			log usage & "\n\nRun `man dark-mode' for complete documentation."
+			return
+		else if {"-v", "--version"} contains arg then
+			log "v" & version
+			return
 		end if
 	end
 	if length of argv > 0 then set update to true
