@@ -16,22 +16,11 @@
 .
 .Sh DESCRIPTION
 .Nm
-is a command-line interface for the system's
+toggles the system's
 .Sy Appearance
-setting
-.Po located under the
-.Dq General
-in System Preferences
-.Pc .
-.
-.Pp
-Called without arguments,
-.Nm
-displays the current dark-mode setting by writing
-.Sy true
-or
-.Sy false
-to the standard output.
+setting between light and dark themes
+.Pq Dq dark mode ,
+or reports the current setting if called without arguments.
 .
 .Pp
 If a boolean-like
@@ -80,6 +69,13 @@ Print the program's version string, then exit.
 .
 .Sh EXIT STATUS
 .Ex -std
+.
+.Sh EXAMPLES
+Toggle the current dark mode setting:
+.Dl Nm Fl t
+.Pp
+Return true if theme auto-switching is currently enabled:
+.Dl Nm Fl qa 2> Ns Pa /dev/null
 .
 .Sh DIAGNOSTICS
 .Bl -ohang
